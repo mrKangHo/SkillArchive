@@ -9,6 +9,14 @@ cask "skillarchive" do
 
   app "SkillArchive.app"
 
+  postflight do
+    # Ad-hoc signed, no Apple Developer ID — Gatekeeper reports a quarantined
+    # download as "damaged" with no override. Clearing quarantine here is the
+    # same fix a user would otherwise have to run by hand.
+    system_command "/usr/bin/xattr",
+                    args: ["-cr", "#{appdir}/SkillArchive.app"]
+  end
+
   zap trash: [
     "~/Library/Preferences/local.skillarchive.plist",
   ]
