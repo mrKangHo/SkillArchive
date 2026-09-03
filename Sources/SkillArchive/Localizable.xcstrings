@@ -1,0 +1,300 @@
+{
+  "sourceLanguage" : "ko",
+  "strings" : {
+    "%@ → %@ 설치 완료" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ → %@ installed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@ → %@ インストール完了" } }
+      }
+    },
+    "%@ 완료" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ complete" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@ 完了" } }
+      }
+    },
+    "%@ 백업 완료" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ backed up" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@ をバックアップしました" } }
+      }
+    },
+    "%@ 전체 agent 설치 완료" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ installed to all agents" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@ を全agentにインストール完了" } }
+      }
+    },
+    "%@ 프로젝트 사본 → 심볼릭 링크로 교체 완료" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ project copy replaced with a symlink" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@ のプロジェクトコピーをシンボリックリンクに置き換えました" } }
+      }
+    },
+    "%lld개 skill 표시 중" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Showing %lld skills" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%lld個のskillを表示中" } }
+      }
+    },
+    "AGENT · %lld/%lld 설치 대상" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "AGENT · %lld/%lld install targets" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "AGENT · %lld/%lld インストール対象" } }
+      }
+    },
+    "감지된 agent %lld개만 선택됨" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected %lld detected agent(s) only" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "検出された%lld個のagentのみ選択されました" } }
+      }
+    },
+    "감지된 것만" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Detected Only" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "検出済みのみ" } }
+      }
+    },
+    "기본값(iCloud)으로 재설정" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reset to Default (iCloud)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "デフォルト(iCloud)にリセット" } }
+      }
+    },
+    "기존 위치에 있던 skill들은 새 폴더로 자동 이동됨(같은 이름이 이미 있으면 건드리지 않음)." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Skills already at the old location move to the new folder automatically (an existing same-name folder is left untouched)." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "既存の場所にあったskillは新しいフォルダへ自動的に移動します(同名のものが既にある場合はそのまま残します)。" } }
+      }
+    },
+    "글로벌 승격" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Promote to Global" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "グローバルに昇格" } }
+      }
+    },
+    "새로고침" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再読み込み" } }
+      }
+    },
+    "선택" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "選択" } }
+      }
+    },
+    "설정" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定" } }
+      }
+    },
+    "설치" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Install" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "インストール" } }
+      }
+    },
+    "설치됨" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Installed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "インストール済み" } }
+      }
+    },
+    "승격 필요" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Needs Promotion" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "昇格が必要" } }
+      }
+    },
+    "심볼릭 링크로 교체" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Replace with Symlink" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "シンボリックリンクに置換" } }
+      }
+    },
+    "agent에만 있고 캐노니컬엔 없는 skill 전부 백업" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Back up every skill that exists on an agent but not yet in the canonical store" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "agentにのみ存在しキャノニカルにまだ無いskillを全てバックアップ" } }
+      }
+    },
+    "에러" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Error" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "エラー" } }
+      }
+    },
+    "완료" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "完了" } }
+      }
+    },
+    "원본 없음: %@" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Source not found: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "元のファイルが見つかりません: %@" } }
+      }
+    },
+    "이미 존재함: %@" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Already exists: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "既に存在します: %@" } }
+      }
+    },
+    "일부 미설치" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Partially Installed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "一部未インストール" } }
+      }
+    },
+    "전체 백업" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Back Up All" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "全体バックアップ" } }
+      }
+    },
+    "전체 백업 / 전체 설치 대상에 포함" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Included in Back Up All / Install All" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "全体バックアップ・全体インストールの対象に含む" } }
+      }
+    },
+    "전체 보기" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show All" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "すべて表示" } }
+      }
+    },
+    "전체 선택" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Select All" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "全て選択" } }
+      }
+    },
+    "전체 설치" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Install All" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "全体インストール" } }
+      }
+    },
+    "전체 설치됨" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Installed Everywhere" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "全てインストール済み" } }
+      }
+    },
+    "제외됨" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Excluded" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "除外" } }
+      }
+    },
+    "캐노니컬 skill 전부 → 모든 agent에 설치" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Install every canonical skill to all agents" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "キャノニカルskillを全agentにインストール" } }
+      }
+    },
+    "캐노니컬 없음" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No Canonical Copy" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "キャノニカル無し" } }
+      }
+    },
+    "캐노니컬 저장소" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "CANONICAL STORE" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "キャノニカルストア" } }
+      }
+    },
+    "프로젝트: %@" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロジェクト: %@" } }
+      }
+    },
+    "프로젝트 SKILL 폴더" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "PROJECT SKILL FOLDERS" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロジェクトSKILLフォルダ" } }
+      }
+    },
+    "프로젝트 skill 전체 글로벌 승격" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Promote All Project Skills" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロジェクトskillを全てグローバル化" } }
+      }
+    },
+    "프로젝트 skills 폴더 추가…" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Add Project Skills Folder…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロジェクトskillsフォルダを追加…" } }
+      }
+    },
+    "프로젝트 전용 skill 전부 글로벌 승격" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Promote every project-only skill to global" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロジェクト専用skillを全てグローバルに昇格" } }
+      }
+    },
+    "폴더 변경…" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Change Folder…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "フォルダを変更…" } }
+      }
+    },
+    "확인" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "OK" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "OK" } }
+      }
+    },
+    "skill 검색" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Search skills" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "skillを検索" } }
+      }
+    },
+    "백업" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Back Up" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バックアップ" } }
+      }
+    },
+    "백업 안됨" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not Backed Up" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "未バックアップ" } }
+      }
+    },
+    "백업 위치" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Backup Location" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バックアップ場所" } }
+      }
+    },
+    "백업 위치 변경 완료" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Backup location changed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バックアップ場所を変更しました" } }
+      }
+    },
+    "변경…" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Change…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "変更…" } }
+      }
+    },
+    "모든 skill이 최종적으로 모이는 캐노니컬 저장소 위치. iCloud Drive 경로로 두면 OS 초기화나 새 맥에서도 그대로 복구됨." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The canonical store where every skill ultimately collects. Keep it on an iCloud Drive path and it survives an OS reinstall or a move to a new Mac." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "全てのskillが最終的に集まるキャノニカルストアの場所。iCloud Driveのパスにしておけば、OS再インストールや新しいMacでもそのまま復元されます。" } }
+      }
+    }
+  },
+  "version" : "1.1"
+}
