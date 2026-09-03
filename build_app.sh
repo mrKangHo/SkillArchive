@@ -64,6 +64,9 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </plist>
 PLIST
 
+echo "Code-signing (ad-hoc)…"
+codesign --force --deep --sign - "$APP"
+
 touch "$APP"
 
 echo "Done: $(pwd)/$APP"
