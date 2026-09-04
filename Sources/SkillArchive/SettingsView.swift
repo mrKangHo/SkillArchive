@@ -33,10 +33,21 @@ struct SettingsView: View {
                 HStack(spacing: 10) {
                     Button("폴더 변경…") { pickFolder() }
                         .buttonStyle(PressableButtonStyle(tint: .accentColor, filled: false))
+                        .disabled(app.isBusy)
 
                     if !app.settingsStore.isDefault {
                         Button("기본값(iCloud)으로 재설정") { app.resetCanonicalStoreToDefault() }
                             .buttonStyle(PressableButtonStyle(tint: .orange, filled: false))
+                            .disabled(app.isBusy)
+                    }
+
+                    if app.isBusy {
+                        HStack(spacing: 6) {
+                            ProgressView().controlSize(.small)
+                            Text("이동 중…")
+                                .font(.system(size: 11))
+                                .foregroundStyle(.secondary)
+                        }
                     }
                 }
 

@@ -64,11 +64,19 @@ struct ContentView: View {
             VStack(spacing: 0) {
                 Toolbar(visibleCount: filtered.count)
                 Divider().opacity(0.5)
-                List(filtered, selection: $selected) { entry in
-                    EntryRow(entry: entry)
+                if let progress = app.busyProgress {
+                    BusyProgressBar(progress: progress)
+                    Divider().opacity(0.5)
                 }
-                .listStyle(.inset)
-                .animation(.snappy, value: filtered.map(\.id))
+                if app.isScanning && app.catalog.isEmpty {
+                    ScanningView()
+                } else {
+                    List(filtered, selection: $selected) { entry in
+                        EntryRow(entry: entry)
+                    }
+                    .listStyle(.inset)
+                    .animation(.snappy, value: filtered.map(\.id))
+                }
             }
         }
         .searchable(text: $filter, prompt: "skill 검색")
@@ -95,6 +103,46 @@ struct ContentView: View {
             }
         }
         .animation(.snappy, value: app.lastMessage)
+    }
+}
+
+private struct ScanningView: View {
+    var body: some View {
+        VStack(spacing: 10) {
+            ProgressView()
+            Text("skill 스캔 중…")
+                .font(.system(size: 12))
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct BusyProgressBar: View {
+    let progress: BusyProgress
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 8) {
+                Text(progress.label)
+                    .font(.system(size: 10.5, weight: .semibold))
+                Text("· \(progress.currentItem) 처리 중…")
+                    .font(.system(size: 10.5))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                Spacer()
+                Text("\(progress.completed)/\(progress.total)")
+                    .font(.system(size: 10.5, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+            }
+            ProgressView(value: Double(progress.completed), total: Double(max(progress.total, 1)))
+                .progressViewStyle(.linear)
+                .animation(.easeInOut(duration: 0.2), value: progress.completed)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 6)
+        .background(.bar)
     }
 }
 
@@ -132,6 +180,11 @@ private struct Toolbar: View {
                         .font(.system(size: 10.5))
                         .foregroundStyle(.secondary)
                 }
+                if app.isScanning {
+                    ProgressView()
+                        .controlSize(.small)
+                        .padding(.leading, 2)
+                }
             }
 
             Spacer()
@@ -147,12 +200,13 @@ private struct Toolbar: View {
             }
             Divider().frame(height: 16)
             toolbarIcon("arrow.clockwise", help: "새로고침") {
-                withAnimation(.snappy) { app.rescan() }
+                app.rescan()
             }
             toolbarIcon("gearshape", help: "설정") {
                 app.showSettings = true
             }
         }
+        .disabled(app.isBusy)
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
         .background(.bar)
@@ -377,6 +431,7 @@ private struct EntryRow: View {
             }
             .padding(.top, 6)
             .padding(.leading, 4)
+            .disabled(app.isBusy)
         } label: {
             HStack(spacing: 10) {
                 VStack(alignment: .leading, spacing: 2) {
@@ -395,12 +450,15 @@ private struct EntryRow: View {
                 if entry.isPromotable {
                     Button("글로벌 승격") { app.backup(entry) }
                         .buttonStyle(PressableButtonStyle(tint: .orange))
+                        .disabled(app.isBusy)
                 } else if entry.isBackupable {
                     Button("백업") { app.backup(entry) }
                         .buttonStyle(PressableButtonStyle(tint: .red))
+                        .disabled(app.isBusy)
                 } else if entry.canonical != nil && !entry.missingAgents.isEmpty {
                     Button("전체 설치") { app.installToAllMissing(entry) }
                         .buttonStyle(PressableButtonStyle(tint: .blue))
+                        .disabled(app.isBusy)
                 }
             }
             .padding(.vertical, 3)

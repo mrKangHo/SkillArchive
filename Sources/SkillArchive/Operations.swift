@@ -76,6 +76,17 @@ enum Operations {
         }
     }
 
+    /// Best-effort: recursively ask iCloud to start downloading every file under `url`.
+    /// Evicted iCloud Drive files otherwise only download the moment something tries to read
+    /// them (e.g. inside `copyItem`), which serializes an entire folder's download behind
+    /// whatever operation happens to touch it first.
+    static func prefetchDownload(_ url: URL) {
+        guard let enumerator = fm.enumerator(at: url, includingPropertiesForKeys: nil) else { return }
+        for case let fileURL as URL in enumerator {
+            try? fm.startDownloadingUbiquitousItem(at: fileURL)
+        }
+    }
+
     static func removeFromAgent(skillName: String, agent: AgentLocation) throws {
         let dest = agent.resolvedURL.appendingPathComponent(skillName)
         guard fm.fileExists(atPath: dest.path) || isSymlink(dest) else { return }
