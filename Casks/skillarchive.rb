@@ -1,6 +1,6 @@
 cask "skillarchive" do
-  version "1.0.1"
-  sha256 "67ff265918090fecbfaad575f2aaf729a5787f1248cac51cf7107c392bc5c510"
+  version "1.0.2"
+  sha256 "3b541d422cd7d9a709108ebab71963eb49d6d7611ba30129275933c30fac3350"
 
   url "https://github.com/mrKangHo/SkillArchive/releases/download/v#{version}/SkillArchive.app.zip"
   name "SkillArchive"
