@@ -55,3 +55,11 @@ struct CatalogEntry: Identifiable {
     var isBackupable: Bool { canonical == nil && !agentCopies.isEmpty && projectCopies.isEmpty }
     var missingAgents: [String] = [] // agentIDs that could receive this skill but don't have it
 }
+
+
+struct BusyProgress: Equatable {
+    var label: String
+    var completed: Int
+    var total: Int
+    var currentItem: String
+}
