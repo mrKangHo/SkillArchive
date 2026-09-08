@@ -1,65 +1,41 @@
-# SkillArchive
+🇰🇷 [한국어](README.md) | 🇺🇸 [English](README.en.md) | 🇯🇵 [日本語](README.ja.md) | 🇨🇳 [中文](README.zh.md)
 
-A native macOS app that backs up and installs **Agent Skills** (`SKILL.md` folders) across every AI coding agent installed on your Mac — Claude Code, Cursor, Gemini CLI, Codex CLI, OpenCode, Factory, Grok CLI, CommandCode, Pi Agent, and any tool that follows the same `~/.<agent>/skills` convention.
+<p align="center">
+  <img src="docs/icon.png" width="128" alt="SkillArchive icon" />
+</p>
 
-Skills tend to end up scattered: some live in an agent's global skills folder, some are copied into individual project repos, and none of it survives an OS reinstall or a move to a new Mac. SkillArchive scans every known location, lets you promote project-local skills to a single **canonical store**, and re-installs that store into any agent you choose — on this Mac or a fresh one.
+<h1 align="center">SkillArchive</h1>
 
-## Features
+<p align="center">
+  Mac에 설치된 다양한 AI 코딩 에이전트(Claude Code, Antigravity, Cursor, Codex 등)의 <b>Agent Skills(SKILL.md)</b>를 자동 탐색하고 백업 및 설치를 지원하는 macOS 네이티브 앱입니다.
+</p>
 
-- **Cross-agent scan** — finds every skill in each agent's global folder and in project-local skill folders you add, and shows what's backed up vs. what's missing.
-- **One canonical store** — a single folder (by default on iCloud Drive, so it survives an OS reinstall or a new Mac) that every agent installs from.
-- **Promote / Back up / Install**, one skill at a time or in bulk for everything at once.
-- **Per-agent install targets** — enable/disable which agents participate in bulk installs, or auto-detect which agents are actually present on the current machine.
-- **Real app icons** where an agent has one installed, with a colored fallback glyph otherwise.
-- **Configurable backup location** — change it any time from Settings; existing skills migrate automatically.
-- **Localized** in Korean, English, and Japanese.
+<p align="center">
+  <img src="docs/screenshot.png" alt="SkillArchive Screenshot" width="800" />
+</p>
 
-## Requirements
+## 주요 기능
 
-- macOS 13 (Ventura) or later
+- **크로스 에이전트 자동 스캔**: Claude Code, Cursor, Codex, OpenCode 등 각 에이전트의 전역 폴더 및 로컬 프로젝트에 분산된 스킬 탐색
+- **단일 표준 저장소(Canonical Store)**: OS 재설치나 Mac 기기 변경에도 안전하도록 iCloud Drive 기반 통합 저장소 지원
+- **스킬 승격 / 백업 / 설치**: 개별 스킬 또는 전체 스킬을 원클릭으로 백업하고 원하는 에이전트에 일괄 설치
+- **에이전트별 설치 대상 제어**: 설치할 대상 에이전트 선택 및 현재 Mac에 설치된 에이전트 자동 감지
+- **다국어 지원**: 한국어, English, 日本語 지원
 
-## Install
+## 설치 (Installation)
 
 ### Homebrew
+```bash
+brew tap mrKangHo/tap
+brew install skillarchive
+```
 
-This repo doubles as its own Homebrew tap (no separate `homebrew-*` repo):
-
-```sh
-brew tap mrKangHo/skillarchive https://github.com/mrKangHo/SkillArchive
+또는 전용 Cask 직접 설치:
+```bash
+brew tap mrKangHo/SkillArchive https://github.com/mrKangHo/SkillArchive
 brew install --cask skillarchive
 ```
 
-### Manual
+## 시스템 요구 사양
 
-Download the latest `SkillArchive.app.zip` from [Releases](https://github.com/mrKangHo/SkillArchive/releases), unzip, and drag `SkillArchive.app` into `/Applications`.
-
-> SkillArchive isn't notarized yet. On first launch, Gatekeeper may block it — right-click the app → **Open**, or run `xattr -cr /Applications/SkillArchive.app` once.
-
-### Build from source
-
-Requires Xcode 15+ (or the Swift 5.9+ toolchain) and [XcodeGen](https://github.com/yonaskolb/XcodeGen) if you want the `.xcodeproj`.
-
-```sh
-git clone https://github.com/mrKangHo/SkillArchive.git
-cd SkillArchive
-
-# Option A: open in Xcode
-xcodegen generate
-open SkillArchive.xcodeproj
-
-# Option B: command line, no Xcode project needed
-./build_app.sh
-open SkillArchive.app
-```
-
-## How it works
-
-- **Agents** are defined in `Sources/SkillArchive/Registry.swift` — each has a global skills path and an optional exclude list (for an agent's own built-in skills, which SkillArchive never touches).
-- **Project skill folders** are added from the sidebar (`+`) and remembered across launches.
-- **Promote to Global** copies a project-local skill into the canonical store (non-destructive — the project copy is untouched). A separate "Replace with Symlink" action can swap the project copy for a symlink back to the canonical one, if you want them to stay in sync.
-- **Install** always copies (never symlinks) into an agent's folder, so each agent's copy is independent.
-- Backup location lives in **Settings** — point it at iCloud Drive (default), a different Drive, or anywhere else; moving it migrates existing skills automatically.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+- macOS 13 (Ventura) 이상
