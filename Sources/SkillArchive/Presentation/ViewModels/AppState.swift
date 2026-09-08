@@ -1,61 +1,53 @@
 import Foundation
 import SwiftUI
 
-/// Progress snapshot for a running batch operation (bulk backup/install), shown as a
-/// progress bar so long-running iCloud-backed file I/O doesn't look like a hang.
-struct BusyProgress: Equatable {
-    var label: String
-    var completed: Int
-    var total: Int
-    /// Name of the item currently being copied — set the moment an item starts (not when it
-    /// finishes), since a single iCloud-backed skill folder can take several seconds to download
-    /// and the bar needs to show *something* is happening during that wait, not just after.
-    var currentItem: String
-}
-
 final class AppState: ObservableObject {
     @Published var catalog: [CatalogEntry] = []
     @Published var lastError: String?
     @Published var lastMessage: String?
     @Published var selectedAgentID: String?
     @Published var showSettings = false
-    /// True while a scan or file operation is in flight — bulk buttons disable to avoid
-    /// overlapping runs against the same canonical store.
     @Published var isBusy = false
-    /// Set only while a scan is running, so the UI can show a "스캔 중…" state without
-    /// hiding results that are already on screen from a previous scan.
     @Published var isScanning = false
-    /// Set only while a batch (bulk backup/install) is running, carrying counts for a progress bar.
     @Published var busyProgress: BusyProgress?
     @Published var enabledAgentIDs: Set<String> {
-        didSet { saveEnabledAgents() }
+        didSet { manageSettingsUseCase.enabledAgentIDs = enabledAgentIDs }
     }
 
-    let projectStore = ProjectStore()
-    let settingsStore = SettingsStore()
-    private let enabledAgentsKey = "skillhub.enabledAgentIDs.v1"
+    public let projectStore: ProjectStore
+    public let settingsStore: SettingsStore
+
+    private let scanCatalogUseCase: ScanCatalogUseCaseProtocol
+    private let manageSkillUseCase: ManageSkillUseCaseProtocol
+    private let manageProjectsUseCase: ManageProjectsUseCaseProtocol
+    private var manageSettingsUseCase: ManageSettingsUseCaseProtocol
+
     private let ioQueue = DispatchQueue(label: "skillhub.io", qos: .userInitiated)
     private let prefetchQueue = DispatchQueue(label: "skillhub.prefetch", qos: .utility, attributes: .concurrent)
 
-    init() {
-        if let saved = UserDefaults.standard.array(forKey: "skillhub.enabledAgentIDs.v1") as? [String] {
-            enabledAgentIDs = Set(saved)
-        } else {
-            enabledAgentIDs = Set(Registry.agents.map(\.id)) // default: every known agent participates
-        }
-        rescan()
-    }
+    init(
+        scanCatalogUseCase: ScanCatalogUseCaseProtocol = AppDIContainer.shared.scanCatalogUseCase,
+        manageSkillUseCase: ManageSkillUseCaseProtocol = AppDIContainer.shared.manageSkillUseCase,
+        manageProjectsUseCase: ManageProjectsUseCaseProtocol = AppDIContainer.shared.manageProjectsUseCase,
+        manageSettingsUseCase: ManageSettingsUseCaseProtocol = AppDIContainer.shared.manageSettingsUseCase,
+        projectStore: ProjectStore = AppDIContainer.shared.projectStore,
+        settingsStore: SettingsStore = AppDIContainer.shared.settingsStore
+    ) {
+        self.scanCatalogUseCase = scanCatalogUseCase
+        self.manageSkillUseCase = manageSkillUseCase
+        self.manageProjectsUseCase = manageProjectsUseCase
+        self.manageSettingsUseCase = manageSettingsUseCase
+        self.projectStore = projectStore
+        self.settingsStore = settingsStore
 
-    private func saveEnabledAgents() {
-        UserDefaults.standard.set(Array(enabledAgentIDs), forKey: enabledAgentsKey)
+        self.enabledAgentIDs = manageSettingsUseCase.enabledAgentIDs
+        rescan()
     }
 
     func setAgentEnabled(_ id: String, _ on: Bool) {
         if on { enabledAgentIDs.insert(id) } else { enabledAgentIDs.remove(id) }
     }
 
-    /// Narrows bulk-install targets to agents actually present on this machine —
-    /// handy right after restoring on a fresh OS/machine where not every agent is installed yet.
     func selectOnlyDetectedAgents() {
         enabledAgentIDs = Set(Registry.agents.filter(\.isInstalledOnDisk).map(\.id))
         lastMessage = String(localized: "감지된 agent \(enabledAgentIDs.count)개만 선택됨")
@@ -65,18 +57,16 @@ final class AppState: ObservableObject {
         enabledAgentIDs = Set(Registry.agents.map(\.id))
     }
 
-    /// Scans every known location (canonical store, agent folders, project folders) off the
-    /// main thread — these can live on iCloud Drive, where a cold read can block on a download,
-    /// so doing this synchronously on launch/refresh made the whole window feel frozen.
     func rescan() {
         isScanning = true
-        let projects = projectStore.projects
+        let projects = manageProjectsUseCase.projects
         let canonicalDir = settingsStore.canonicalDirURL
         ioQueue.async { [weak self] in
-            let result = Scanner.buildCatalog(projects: projects, canonicalDir: canonicalDir)
+            guard let self = self else { return }
+            let result = self.scanCatalogUseCase.execute(projects: projects, canonicalDir: canonicalDir)
             DispatchQueue.main.async {
-                self?.catalog = result
-                self?.isScanning = false
+                self.catalog = result
+                self.isScanning = false
             }
         }
     }
@@ -85,9 +75,6 @@ final class AppState: ObservableObject {
         Registry.agents.first { $0.id == id }
     }
 
-    /// Runs a single file operation off the main thread, showing it as a 1-item busyProgress
-    /// (labelled with `itemName`) so a single iCloud-backed copy — which can itself take a few
-    /// seconds — still shows live activity instead of just dimming buttons with no feedback.
     func run(_ block: @escaping () throws -> Void, label: String, itemName: String, success: String? = nil) {
         isBusy = true
         busyProgress = BusyProgress(label: label, completed: 0, total: 1, currentItem: itemName)
@@ -114,23 +101,26 @@ final class AppState: ObservableObject {
     func backup(_ entry: CatalogEntry) {
         guard entry.canonical == nil else { return }
         if let folder = entry.projectCopies.values.first ?? entry.agentCopies.values.first {
-            run({ try Operations.backupToCanonical(folder, canonicalDir: self.settingsStore.canonicalDirURL) }, label: String(localized: "백업"), itemName: entry.name, success: String(localized: "\(entry.name) 백업 완료"))
+            run({ [weak self] in
+                guard let self = self else { return }
+                try self.manageSkillUseCase.backupToCanonical(folder, canonicalDir: self.settingsStore.canonicalDirURL)
+            }, label: String(localized: "백업"), itemName: entry.name, success: String(localized: "\(entry.name) 백업 완료"))
         }
     }
 
     func promoteAllProjectSkills() {
         let items = catalog.compactMap { entry in entry.isPromotable ? entry.projectCopies.values.first : nil }
         let canonicalDir = settingsStore.canonicalDirURL
-        runBatch(label: String(localized: "프로젝트 skill 전체 글로벌 승격"), items: items, itemName: \.name) { folder in
-            try Operations.backupToCanonical(folder, canonicalDir: canonicalDir)
+        runBatch(label: String(localized: "프로젝트 skill 전체 글로벌 승격"), items: items, itemName: \.name) { [weak self] folder in
+            try self?.manageSkillUseCase.backupToCanonical(folder, canonicalDir: canonicalDir)
         }
     }
 
     func backupAllAgentSkills() {
         let items = catalog.compactMap { entry in entry.isBackupable ? entry.agentCopies.values.first : nil }
         let canonicalDir = settingsStore.canonicalDirURL
-        runBatch(label: String(localized: "전체 백업"), items: items, itemName: \.name) { folder in
-            try Operations.backupToCanonical(folder, canonicalDir: canonicalDir)
+        runBatch(label: String(localized: "전체 백업"), items: items, itemName: \.name) { [weak self] folder in
+            try self?.manageSkillUseCase.backupToCanonical(folder, canonicalDir: canonicalDir)
         }
     }
 
@@ -143,27 +133,19 @@ final class AppState: ObservableObject {
             }
         }
         let canonicalDir = settingsStore.canonicalDirURL
-        // iCloud-backed canonical skills can take seconds each to download — kick off every
-        // download concurrently up front instead of waiting on them one at a time in the loop below.
         prefetchCloudDownloads(Set(items.map(\.skillName)).map { canonicalDir.appendingPathComponent($0) })
         runBatch(label: String(localized: "전체 설치"), items: items, itemName: { "\($0.skillName) → \($0.agentName)" }) { [weak self] item in
             guard let agent = self?.agent(item.agentID) else { return }
-            try Operations.install(skillName: item.skillName, into: agent, canonicalDir: canonicalDir)
+            try self?.manageSkillUseCase.install(skillName: item.skillName, into: agent, canonicalDir: canonicalDir)
         }
     }
 
-    /// Best-effort: ask iCloud to start downloading every file under these folders concurrently
-    /// (fire-and-forget), so a later sequential copy loop over the same folders finds them
-    /// already downloading/downloaded instead of paying for each download serially.
     private func prefetchCloudDownloads(_ urls: [URL]) {
         for url in urls {
             prefetchQueue.async { Operations.prefetchDownload(url) }
         }
     }
 
-    /// Runs a batch of operations off the main thread, tolerating per-item failures
-    /// (already-exists etc.) and publishing progress — including which item is currently
-    /// running — so long-running installs/backups show live activity instead of looking hung.
     private func runBatch<T>(label: String, items: [T], itemName: @escaping (T) -> String, operation: @escaping (T) throws -> Void) {
         guard !items.isEmpty else {
             lastMessage = String(localized: "\(label): 대상 없음")
@@ -201,7 +183,9 @@ final class AppState: ObservableObject {
         guard entry.canonical != nil, let agent = agent(agentID) else { return }
         let canonicalDir = settingsStore.canonicalDirURL
         prefetchCloudDownloads([canonicalDir.appendingPathComponent(entry.name)])
-        run({ try Operations.install(skillName: entry.name, into: agent, canonicalDir: canonicalDir) }, label: String(localized: "설치"), itemName: "\(entry.name) → \(agent.displayName)", success: String(localized: "\(entry.name) → \(agent.displayName) 설치 완료"))
+        run({ [weak self] in
+            try self?.manageSkillUseCase.install(skillName: entry.name, into: agent, canonicalDir: canonicalDir)
+        }, label: String(localized: "설치"), itemName: "\(entry.name) → \(agent.displayName)", success: String(localized: "\(entry.name) → \(agent.displayName) 설치 완료"))
     }
 
     func installToAllMissing(_ entry: CatalogEntry) {
@@ -211,28 +195,28 @@ final class AppState: ObservableObject {
         prefetchCloudDownloads([canonicalDir.appendingPathComponent(entry.name)])
         runBatch(label: String(localized: "\(entry.name) 전체 agent 설치"), items: ids, itemName: { [weak self] id in self?.agent(id)?.displayName ?? id }) { [weak self] id in
             guard let agent = self?.agent(id) else { return }
-            try Operations.install(skillName: entry.name, into: agent, canonicalDir: canonicalDir)
+            try self?.manageSkillUseCase.install(skillName: entry.name, into: agent, canonicalDir: canonicalDir)
         }
     }
 
     func linkProject(_ entry: CatalogEntry, project: ProjectLocation) {
         guard entry.canonical != nil, let folder = entry.projectCopies[project] else { return }
         let canonicalDir = settingsStore.canonicalDirURL
-        run({ try Operations.linkProjectToCanonical(name: entry.name, projectFolder: folder, canonicalDir: canonicalDir) }, label: String(localized: "심볼릭 링크로 교체"), itemName: entry.name, success: String(localized: "\(entry.name) 프로젝트 사본 → 심볼릭 링크로 교체 완료"))
+        run({ [weak self] in
+            try self?.manageSkillUseCase.linkProjectToCanonical(name: entry.name, projectFolder: folder, canonicalDir: canonicalDir)
+        }, label: String(localized: "심볼릭 링크로 교체"), itemName: entry.name, success: String(localized: "\(entry.name) 프로젝트 사본 → 심볼릭 링크로 교체 완료"))
     }
 
     func addProjectFolder(_ url: URL) {
-        projectStore.add(url: url)
+        manageProjectsUseCase.add(url: url)
         rescan()
     }
 
     func removeProject(_ p: ProjectLocation) {
-        projectStore.remove(p)
+        manageProjectsUseCase.remove(p)
         rescan()
     }
 
-    /// Change the backup location, moving any skills already stored at the old location
-    /// into the new one first so nothing is orphaned.
     func changeCanonicalStore(to newURL: URL) {
         let oldURL = settingsStore.canonicalDirURL
         guard oldURL.path != newURL.path else { return }
